@@ -1,1 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>week1_RWD</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="title">My Website</div>
+      <div class="menus"></div>
+    </div>
+    <div class="banner">Welcome to ChihuahuaHome</div>
+    <div class="content">
+      <div class="promotions"></div>
+      <div class="boxes"></div>
+    </div>
 
+    <script>
+      const menusContainer = document.querySelector('.menus')
+      const promotionsContainer = document.querySelector('.promotions')
+      const boxesContainer = document.querySelector('.boxes')
+
+      for (let i = 0; i < 4; i++) {
+        const newItem = document.createElement('div')
+
+        newItem.textContent = `Item${i + 1}`
+        newItem.classList.add('item')
+
+        menusContainer.appendChild(newItem)
+      }
+
+      for (let i = 0; i < 3; i++) {
+        const newDiv = document.createElement('div')
+        const newImg = document.createElement('img')
+
+        newImg.src = 'images/week1-RWD/giwawa.webp'
+        newDiv.textContent = `Promotion ${i + 1}`
+        newDiv.classList.add('promotion')
+        newDiv.insertBefore(newImg, newDiv.firstChild)
+
+        promotionsContainer.appendChild(newDiv)
+      }
+
+      for (let i = 0; i < 10; i++) {
+        const newDiv = document.createElement('div')
+        const titleDiv = document.createElement('div')
+        const img = document.createElement('img')
+
+        titleDiv.textContent = `Title ${i + 1}`
+        img.src = 'images/week1-RWD/star.svg'
+        titleDiv.classList.add('title')
+        img.classList.add('star')
+        newDiv.appendChild(titleDiv)
+        newDiv.appendChild(img)
+        newDiv.classList.add('box')
+
+        boxesContainer.appendChild(newDiv)
+      }
+    </script>
+  </body>
+</html>
