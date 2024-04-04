@@ -9,27 +9,34 @@
   <body>
     <div class="header">
       <div class="title">My Website</div>
-      <div class="menus"></div>
+      <div class="menus" onclick="openSideMenu()"></div>
     </div>
     <div class="banner">Welcome to ChihuahuaHome</div>
     <div class="content">
       <div class="promotions"></div>
       <div class="boxes"></div>
     </div>
+    <div class="side-menu display-none">
+      <div class="close" onclick="closeSideMenu()">X</div>
+    </div>
 
     <script>
       const menusContainer = document.querySelector('.menus')
+      const sideMenusContainer = document.querySelector('.side-menu')
       const promotionsContainer = document.querySelector('.promotions')
       const boxesContainer = document.querySelector('.boxes')
 
-      for (let i = 0; i < 4; i++) {
-        const newItem = document.createElement('div')
-
-        newItem.textContent = `Item${i + 1}`
-        newItem.classList.add('item')
-
-        menusContainer.appendChild(newItem)
+      const createMenuItems = (container, count, className) => {
+        for (let i = 0; i < count; i++) {
+          const menuItemElement = document.createElement('div')
+          menuItemElement.textContent = `Item ${i + 1}`
+          menuItemElement.classList.add(className)
+          container.appendChild(menuItemElement)
+        }
       }
+
+      createMenuItems(menusContainer, 4, 'menu-item')
+      createMenuItems(sideMenusContainer, 4, 'side-menu-item')
 
       for (let i = 0; i < 3; i++) {
         const newDiv = document.createElement('div')
@@ -57,6 +64,19 @@
         newDiv.classList.add('box')
 
         boxesContainer.appendChild(newDiv)
+      }
+
+      const openSideMenu = () => {
+        const screenWidth = window.innerWidth
+        if (screenWidth < 360 || screenWidth > 600) {
+          return
+        }
+
+        sideMenusContainer.classList.remove('display-none')
+      }
+
+      const closeSideMenu = () => {
+        sideMenusContainer.classList.add('display-none')
       }
     </script>
   </body>
