@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>week1_RWD</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="title">My Website</div>
+      <div class="menus" onclick="openSideMenu()"></div>
+    </div>
+    <div class="banner">Welcome to Taipei</div>
+    <div class="content">
+      <div class="promotions"></div>
+      <div class="boxes"></div>
+    </div>
+    <div class="load-more-button" onclick="loadMore()">Load More</div>
+    <div class="side-menu display-none">
+      <div class="close" onclick="closeSideMenu()">X</div>
+    </div>
+
+    <script>
+      const menusContainer = document.querySelector(".menus");
+      const sideMenusContainer = document.querySelector(".side-menu");
+      const promotionsContainer = document.querySelector(".promotions");
+      const boxesContainer = document.querySelector(".boxes");
+      const loadMoreButton = document.querySelector(".load-more-button");
+      let displayAttractionIndex = 3;
+
+      const createMenuItems = (container, count, className) => {
+        for (let i = 0; i < count; i++) {
+          const menuItemElement = document.createElement("div");
+          menuItemElement.textContent = `Item ${i + 1}`;
+          menuItemElement.classList.add(className);
+          container.appendChild(menuItemElement);
+        }
+      };
+
+      createMenuItems(menusContainer, 4, "menu-item");
+      createMenuItems(sideMenusContainer, 4, "side-menu-item");
+
+      const getAttractions = async () => {
+        try {
+          const response = await fetch(
+            "https://padax.github.io/taipei-day-trip-resources/taipei-attractions-assignment-1"
+          );
+          const attractions = await response.json();
+
+          return attractions.data;
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+
+      const getImage = (str) => {
+        const regex = /(https?:\/\/.*?\.(?:jpg|jpeg|png|gif))/i;
+        const match = str.match(regex);
+
+        if (match && match.length > 0) {
+          const firstImageUrl = match[0];
+          return firstImageUrl;
+        }
+
+        return "../images/week1-RWD/giwawa.webp";
+      };
+
+      const loadMore = async () => {
+        const attractions = await getAttractions();
+        const { results, count } = attractions;
+
+        createAttractionsBoxes(results, displayAttractionIndex);
+      };
+
+      const hiddenLoadMore = () => {
+        loadMoreButton.classList.add("display-none");
+      };
+
+      const createAttractionsBoxes = (attractions, attractionIndex) => {
+        let maxIndex = attractionIndex + 10;
+        if (maxIndex + 1 >= attractions.length) {
+          maxIndex = attractions.length;
+          hiddenLoadMore();
+        }
+
+        for (let i = attractionIndex; i < maxIndex; i++) {
+          const newDiv = document.createElement("div");
+          const titleDiv = document.createElement("div");
+          const img = document.createElement("img");
+
+          titleDiv.textContent = attractions[i].stitle;
+          img.src = "../images/week1-RWD/star.svg";
+          titleDiv.classList.add("title");
+          img.classList.add("star");
+          newDiv.appendChild(titleDiv);
+          newDiv.appendChild(img);
+          newDiv.classList.add("box");
+          newDiv.style.backgroundImage = `url(${getImage(
+            attractions[i].filelist
+          )})`;
+
+          boxesContainer.appendChild(newDiv);
+          displayAttractionIndex += 1;
+        }
+      };
+
+      const createAttractions = async () => {
+        const attractions = await getAttractions();
+        const { results } = attractions;
+
+        for (let i = 0; i < 3; i++) {
+          const newDiv = document.createElement("div");
+          const newImg = document.createElement("img");
+
+          newImg.src = getImage(results[i].filelist);
+          newDiv.textContent = results[i].stitle;
+          newDiv.classList.add("promotion");
+          newDiv.insertBefore(newImg, newDiv.firstChild);
+
+          promotionsContainer.appendChild(newDiv);
+        }
+
+        createAttractionsBoxes(results, 3);
+      };
+
+      createAttractions();
+
+      const openSideMenu = () => {
+        const screenWidth = window.innerWidth;
+        if (screenWidth < 360 || screenWidth > 600) {
+          return;
+        }
+
+        sideMenusContainer.classList.remove("display-none");
+      };
+
+      const closeSideMenu = () => {
+        sideMenusContainer.classList.add("display-none");
+      };
+    </script>
+  </body>
+</html>
