@@ -21,63 +21,63 @@
     </div>
 
     <script>
-      const menusContainer = document.querySelector('.menus')
-      const sideMenusContainer = document.querySelector('.side-menu')
-      const promotionsContainer = document.querySelector('.promotions')
-      const boxesContainer = document.querySelector('.boxes')
+      const menusContainer = document.querySelector(".menus");
+      const sideMenusContainer = document.querySelector(".side-menu");
+      const promotionsContainer = document.querySelector(".promotions");
+      const boxesContainer = document.querySelector(".boxes");
 
       const createMenuItems = (container, count, className) => {
         for (let i = 0; i < count; i++) {
-          const menuItemElement = document.createElement('div')
-          menuItemElement.textContent = `Item ${i + 1}`
-          menuItemElement.classList.add(className)
-          container.appendChild(menuItemElement)
+          const menuItemElement = document.createElement("div");
+          menuItemElement.textContent = `Item ${i + 1}`;
+          menuItemElement.classList.add(className);
+          container.appendChild(menuItemElement);
         }
-      }
+      };
 
-      createMenuItems(menusContainer, 4, 'menu-item')
-      createMenuItems(sideMenusContainer, 4, 'side-menu-item')
+      createMenuItems(menusContainer, 4, "menu-item");
+      createMenuItems(sideMenusContainer, 4, "side-menu-item");
 
       for (let i = 0; i < 3; i++) {
-        const newDiv = document.createElement('div')
-        const newImg = document.createElement('img')
+        const newDiv = document.createElement("div");
+        const newImg = document.createElement("img");
 
-        newImg.src = 'images/week1-RWD/giwawa.webp'
-        newDiv.textContent = `Promotion ${i + 1}`
-        newDiv.classList.add('promotion')
-        newDiv.insertBefore(newImg, newDiv.firstChild)
+        newImg.src = "images/week1-RWD/giwawa.webp";
+        newDiv.textContent = `Promotion ${i + 1}`;
+        newDiv.classList.add("promotion");
+        newDiv.insertBefore(newImg, newDiv.firstChild);
 
-        promotionsContainer.appendChild(newDiv)
+        promotionsContainer.appendChild(newDiv);
       }
 
       for (let i = 0; i < 10; i++) {
-        const newDiv = document.createElement('div')
-        const titleDiv = document.createElement('div')
-        const img = document.createElement('img')
+        const newDiv = document.createElement("div");
+        const titleDiv = document.createElement("div");
+        const img = document.createElement("img");
 
-        titleDiv.textContent = `Title ${i + 1}`
-        img.src = 'images/week1-RWD/star.svg'
-        titleDiv.classList.add('title')
-        img.classList.add('star')
-        newDiv.appendChild(titleDiv)
-        newDiv.appendChild(img)
-        newDiv.classList.add('box')
+        titleDiv.textContent = `Title ${i + 1}`;
+        img.src = "/images/week1-RWD/star.svg";
+        titleDiv.classList.add("title");
+        img.classList.add("star");
+        newDiv.appendChild(titleDiv);
+        newDiv.appendChild(img);
+        newDiv.classList.add("box");
 
-        boxesContainer.appendChild(newDiv)
+        boxesContainer.appendChild(newDiv);
       }
 
       const openSideMenu = () => {
-        const screenWidth = window.innerWidth
+        const screenWidth = window.innerWidth;
         if (screenWidth < 360 || screenWidth > 600) {
-          return
+          return;
         }
 
-        sideMenusContainer.classList.remove('display-none')
-      }
+        sideMenusContainer.classList.remove("display-none");
+      };
 
       const closeSideMenu = () => {
-        sideMenusContainer.classList.add('display-none')
-      }
+        sideMenusContainer.classList.add("display-none");
+      };
     </script>
   </body>
 </html>
