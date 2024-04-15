@@ -27,7 +27,12 @@
       const promotionsContainer = document.querySelector(".promotions");
       const boxesContainer = document.querySelector(".boxes");
       const loadMoreButton = document.querySelector(".load-more-button");
-      let displayAttractionIndex = 3;
+
+      let DISPLAY_ATTRACTION_INDEX = 3;
+      const MENU_ITEM_COUNT = 4;
+      const LOAD_MORE_COUNT = 10;
+      const MIN_SCREEN_WIDTH = 360;
+      const MIDDLE_SCREEN_WIDTH = 600;
 
       const createMenuItems = (container, count, className) => {
         for (let i = 0; i < count; i++) {
@@ -38,8 +43,8 @@
         }
       };
 
-      createMenuItems(menusContainer, 4, "menu-item");
-      createMenuItems(sideMenusContainer, 4, "side-menu-item");
+      createMenuItems(menusContainer, MENU_ITEM_COUNT, "menu-item");
+      createMenuItems(sideMenusContainer, MENU_ITEM_COUNT, "side-menu-item");
 
       const getAttractions = async () => {
         try {
@@ -48,13 +53,12 @@
           );
           const attractions = await response.json();
 
-          return attractions.data;
+          return attractions.data.results;
         } catch (error) {
           console.error("Error fetching data:", error);
         }
       };
-
-      const getImage = (str) => {
+      const getFirstImage = (str) => {
         const regex = /(https?:\/\/.*?\.(?:jpg|jpeg|png|gif))/i;
         const match = str.match(regex);
 
@@ -65,20 +69,8 @@
 
         return "../images/week1-RWD/giwawa.webp";
       };
-
-      const loadMore = async () => {
-        const attractions = await getAttractions();
-        const { results, count } = attractions;
-
-        createAttractionsBoxes(results, displayAttractionIndex);
-      };
-
-      const hiddenLoadMore = () => {
-        loadMoreButton.classList.add("display-none");
-      };
-
-      const createAttractionsBoxes = (attractions, attractionIndex) => {
-        let maxIndex = attractionIndex + 10;
+      const createBoxes = (attractions, attractionIndex) => {
+        let maxIndex = attractionIndex + LOAD_MORE_COUNT;
         if (maxIndex + 1 >= attractions.length) {
           maxIndex = attractions.length;
           hiddenLoadMore();
@@ -96,45 +88,53 @@
           newDiv.appendChild(titleDiv);
           newDiv.appendChild(img);
           newDiv.classList.add("box");
-          newDiv.style.backgroundImage = `url(${getImage(
+          newDiv.style.backgroundImage = `url(${getFirstImage(
             attractions[i].filelist
           )})`;
 
           boxesContainer.appendChild(newDiv);
-          displayAttractionIndex += 1;
+          DISPLAY_ATTRACTION_INDEX += 1;
         }
       };
-
       const createAttractions = async () => {
         const attractions = await getAttractions();
-        const { results } = attractions;
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < DISPLAY_ATTRACTION_INDEX; i++) {
           const newDiv = document.createElement("div");
           const newImg = document.createElement("img");
 
-          newImg.src = getImage(results[i].filelist);
-          newDiv.textContent = results[i].stitle;
+          newImg.src = getFirstImage(attractions[i].filelist);
+          newDiv.textContent = attractions[i].stitle;
           newDiv.classList.add("promotion");
           newDiv.insertBefore(newImg, newDiv.firstChild);
 
           promotionsContainer.appendChild(newDiv);
         }
 
-        createAttractionsBoxes(results, 3);
+        createBoxes(attractions, DISPLAY_ATTRACTION_INDEX);
       };
 
       createAttractions();
 
+      const loadMore = async () => {
+        const attractions = await getAttractions();
+        createBoxes(attractions, DISPLAY_ATTRACTION_INDEX);
+      };
+      const hiddenLoadMore = () => {
+        loadMoreButton.classList.add("display-none");
+      };
+
       const openSideMenu = () => {
         const screenWidth = window.innerWidth;
-        if (screenWidth < 360 || screenWidth > 600) {
+        if (
+          screenWidth < MIN_SCREEN_WIDTH ||
+          screenWidth > MIDDLE_SCREEN_WIDTH
+        ) {
           return;
         }
 
         sideMenusContainer.classList.remove("display-none");
       };
-
       const closeSideMenu = () => {
         sideMenusContainer.classList.add("display-none");
       };
