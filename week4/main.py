@@ -15,27 +15,22 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "header_text": "歡迎光臨，請輸入帳號密碼"}
+    )
 
 
 @app.post("/signin")
-def signin(
-    request: Request,
-    username: str = Form(None),
-    password: str = Form(None),
-    terms: bool = Form(False),
-):
-    error = None
+def signin(request: Request, username: str = Form(None), password: str = Form(None)):
+    error_message = None
 
-    if not terms:
-        error = "Please agree to the terms."
-    elif not username or not password:
-        error = "Please enter username and password"
+    if not username or not password:
+        error_message = "Please enter username and password"
     elif username != "test" or password != "test":
-        error = "Username or password is not correct"
+        error_message = "Username or password is not correct"
 
-    if error:
-        return RedirectResponse(f"/error?message={error}", status_code=302)
+    if error_message:
+        return RedirectResponse(f"/error?message={error_message}", status_code=302)
 
     request.session["SIGNED_IN"] = True
     return RedirectResponse("/member", status_code=302)
@@ -52,7 +47,10 @@ def member(request: Request):
     if not request.session.get("SIGNED_IN", False):
         return RedirectResponse("/", status_code=302)
 
-    response = templates.TemplateResponse("/member/index.html", {"request": request})
+    response = templates.TemplateResponse(
+        "/member/index.html",
+        {"request": request, "header_text": "歡迎光臨，這是會員頁"},
+    )
     response.headers["Cache-Control"] = "no-cache, no-store"
 
     return response
@@ -61,7 +59,8 @@ def member(request: Request):
 @app.get("/error", response_class=HTMLResponse)
 def error(request: Request, message: str = Query(None)):
     return templates.TemplateResponse(
-        "/error/index.html", {"request": request, "message": message}
+        "/error/index.html",
+        {"request": request, "message": message, "header_text": "失敗頁面"},
     )
 
 
@@ -69,5 +68,9 @@ def error(request: Request, message: str = Query(None)):
 def square(request: Request, number: int):
     return templates.TemplateResponse(
         "/squared_number/index.html",
-        {"request": request, "squared_number": number**2},
+        {
+            "request": request,
+            "squared_number": number**2,
+            "header_text": "正整數平方計算結果",
+        },
     )
