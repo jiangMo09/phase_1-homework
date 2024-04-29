@@ -52,3 +52,15 @@
 
 ### Create a new table named message, in the website database.
 ![alt text](<../images/week5-SQL/截圖 2024-04-29 下午3.04.02.png>)
+
+### SELECT all messages, including sender names. We have to JOIN the member table to get that.
+![alt text](<../images/week5-SQL/截圖 2024-04-29 晚上8.41.40.png>)
+
+### SELECT all messages, including sender names, where sender username equals to test. We have to JOIN the member table to filter and get that.
+![alt text](<../images/week5-SQL/截圖 2024-04-29 晚上8.41.55.png>)
+
+### Use SELECT, SQL Aggregation Functions with JOIN statement, get the average like count of messages where sender username equals to test.
+![alt text](<../images/week5-SQL/截圖 2024-04-29 晚上8.46.15.png>)
+
+### Use SELECT, SQL Aggregation Functions with JOIN statement, get the average like count of messages GROUP BY sender username.
+![alt text](<../images/week5-SQL/截圖 2024-04-29 晚上8.55.54.png>)
