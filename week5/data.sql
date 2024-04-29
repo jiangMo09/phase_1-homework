@@ -39,7 +39,7 @@ CREATE TABLE `member` (
 
 LOCK TABLES `member` WRITE;
 /*!40000 ALTER TABLE `member` DISABLE KEYS */;
-INSERT INTO `member` VALUES (1,'Test','test2','test',0,'2024-04-29 14:59:25'),(2,'2','2','2',0,'2024-04-29 14:59:25'),(3,'3','3','3',0,'2024-04-29 14:59:25'),(4,'4','4','4',0,'2024-04-29 14:59:25'),(5,'5','5','5',0,'2024-04-29 14:59:25');
+INSERT INTO `member` VALUES (1,'test2','test','test',0,'2024-04-29 14:59:25'),(2,'2','2','2',0,'2024-04-29 14:59:25'),(3,'3','3','3',0,'2024-04-29 14:59:25'),(4,'4','4','4',0,'2024-04-29 14:59:25'),(5,'5','5','5',0,'2024-04-29 14:59:25');
 /*!40000 ALTER TABLE `member` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,7 +59,7 @@ CREATE TABLE `message` (
   PRIMARY KEY (`id`),
   KEY `member_id` (`member_id`),
   CONSTRAINT `message_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `member` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,6 +68,7 @@ CREATE TABLE `message` (
 
 LOCK TABLES `message` WRITE;
 /*!40000 ALTER TABLE `message` DISABLE KEYS */;
+INSERT INTO `message` VALUES (1,1,'test 1',1,'2024-04-29 20:39:29'),(2,1,'test 2',9,'2024-04-29 20:39:29'),(3,2,'test 3',22,'2024-04-29 20:39:29'),(4,3,'test 4',999,'2024-04-29 20:39:29'),(5,4,'test 5',0,'2024-04-29 20:39:29');
 /*!40000 ALTER TABLE `message` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -80,4 +81,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-29 15:28:13
+-- Dump completed on 2024-04-29 20:59:36
