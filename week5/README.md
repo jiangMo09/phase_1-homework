@@ -19,7 +19,7 @@
 ![alt text](<../images/week5-SQL/截圖 2024-04-29 下午3.00.00.png>)
 
 ### SELECT total 3 rows, second to fourth, from the member table, in descending order of time. Note: it does not mean SELECT rows where id are 2, 3, or 4.
-![alt text](<../images/week5-SQL/截圖 2024-04-29 下午3.00.26.png>)
+![alt text](<../images/week5-SQL/截圖 2024-04-30 上午9.12.45.png>)
 
 ### SELECT rows where username equals to test.
 ![alt text](<../images/week5-SQL/截圖 2024-04-29 下午3.00.38.png>)
