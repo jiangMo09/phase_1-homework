@@ -66,7 +66,7 @@ def signin(request: Request, username: str = Form(None), password: str = Form(No
             else:
                 error_message = "帳號或是密碼輸入錯誤"
         except mysql.connector.Error as err:
-            error_message = f"Error connecting to MySQL: {err}"
+            error_message = f"資料庫連線錯誤: {err}"
         finally:
             close_mysql(cursor, connection)
 
@@ -82,6 +82,35 @@ def signin(request: Request, username: str = Form(None), password: str = Form(No
 def signout(request: Request):
     request.session.clear()
     return RedirectResponse("/", status_code=302)
+
+@app.post("/signup")
+def signup(signupName: str = Form(...), signupAccount: str = Form(...), signupPassword: str = Form(...)):
+    error_message = None
+    connection, cursor = connection_mysql()
+
+    try:
+        query = "SELECT * FROM member WHERE username = %s"
+        cursor.execute(query, (signupAccount,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            error_message = "重複的使用者名稱"
+        else:
+            query = "INSERT INTO member (name, username, password) VALUES (%s, %s, %s)"
+            values = (signupName, signupAccount, signupPassword)
+            cursor.execute(query, values)
+            connection.commit()
+
+    except mysql.connector.Error as err:
+        error_message = f"資料庫連線錯誤: {err}"
+
+    finally:
+        close_mysql(cursor, connection)
+
+    if error_message:
+        return RedirectResponse(f"/error?message={error_message}", status_code=302)
+    else:
+        return RedirectResponse("/", status_code=302)
 
 
 @app.get("/member", response_class=HTMLResponse)
@@ -104,16 +133,4 @@ def error(request: Request, message: str = Query(None)):
     return templates.TemplateResponse(
         "/error/index.html",
         {"request": request, "message": message, "header_text": "失敗頁面"},
-    )
-
-
-@app.get("/square/{number}")
-def square(request: Request, number: int):
-    return templates.TemplateResponse(
-        "/squared_number/index.html",
-        {
-            "request": request,
-            "squared_number": number**2,
-            "header_text": "正整數平方計算結果",
-        },
     )
