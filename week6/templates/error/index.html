@@ -8,7 +8,11 @@
   </head>
   <body>
     {% include "_header.html" with context %}
-    <div class="content">{{ message }}</div>
+    <div class="content">
+      {{ message }}
+      <br />
+      <a href="/">返回首頁</a>
+    </div>
     <script></script>
   </body>
 </html>
