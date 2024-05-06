@@ -7,7 +7,7 @@ from starlette.middleware.sessions import SessionMiddleware
 import mysql.connector
 
 from utils.mysql import connection_mysql, close_mysql
-from helpers.member import get_messages
+from utils.messages import get_messages, add_messages
 
 secret_key = secrets.token_bytes(32)
 
@@ -111,28 +111,11 @@ def member(request: Request):
 
 @app.post("/createMessage")
 def createMessage(request: Request, message: str = Form(...)):
-    connection, cursor = connection_mysql()
     username = request.session.get("USERNAME", "")
 
-    try:
-        find_id_query = "SELECT id FROM member WHERE username = %s"
-        find_id_value = (username,)
-        cursor.execute(find_id_query, find_id_value)
-        user = cursor.fetchone()
-
-        query = "INSERT INTO message (member_id, content) VALUES (%s, %s)"
-        values = (user[0], message)
-        cursor.execute(query, values)
-        connection.commit()
-    except mysql.connector.Error as err:
-        error_message = f"資料庫連線錯誤: {err}"
-    finally:
-        close_mysql(cursor, connection)
-
-    if error_message:
-        return RedirectResponse(f"/error?message={error_message}", status_code=302)
-    else:
-        return RedirectResponse("/member", status_code=302)
+    add_messages(username, message)
+   
+    return RedirectResponse("/member", status_code=302)
 
 @app.get("/error", response_class=HTMLResponse)
 def error(request: Request, message: str = Query(None)):
