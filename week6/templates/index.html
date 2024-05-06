@@ -9,6 +9,37 @@
   <body>
     {% include "_header.html" with context %}
     <div class="content">
+      <div class="title">註冊帳號</div>
+      <form id="signup" action="/signup" method="post">
+        <label for="signupName">姓名</label>
+        <input
+          id="signupName"
+          type="text"
+          name="signupName"
+          class="username"
+          required
+        /><br />
+        <label for="signupAccount">帳號</label>
+        <input
+          id="signupAccount"
+          type="text"
+          name="signupAccount"
+          class="username"
+          required
+        /><br />
+        <label for="signupPassword">密碼</label>
+        <input
+          id="signupPassword"
+          type="password"
+          name="signupPassword"
+          class="password"
+          required
+        /><br />
+        <button type="submit" class="terms">註冊</button>
+      </form>
+    </div>
+    <hr />
+    <div class="content">
       <div class="title">登入系統</div>
       <form id="loginForm" action="/signin" method="post">
         <label for="username">帳號</label>
@@ -30,20 +61,6 @@
           <input class="terms" type="checkbox" id="terms" name="terms" /></label
         ><br />
         <button type="submit" onclick="handleMemberSubmit()">登入</button>
-      </form>
-    </div>
-    <div class="horizontal-line"></div>
-    <div class="content">
-      <div class="title">計算正整數的平方</div>
-      <form id="squareForm">
-        <label for="positive-integer">正整數</label>
-        <input
-          class="positive-integer"
-          type="text"
-          id="positive-integer"
-          name="positive-integer"
-        /><br />
-        <button type="submit" onclick="handleSquareSubmit(event)">計算</button>
       </form>
     </div>
     <script src="/static/script.js"></script>
