@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+    <title>首頁</title>
+  </head>
+  <body>
+    {% include "_header.html" with context %}
+    <div class="content">
+      <div class="title">登入系統</div>
+      <form id="loginForm" action="/signin" method="post">
+        <label for="username">帳號</label>
+        <input
+          class="username"
+          type="text"
+          id="username"
+          name="username"
+        /><br />
+        <label for="password">密碼</label>
+        <input
+          class="password"
+          type="password"
+          id="password"
+          name="password"
+        /><br />
+        <label for="terms">
+          同意條款
+          <input class="terms" type="checkbox" id="terms" name="terms" /></label
+        ><br />
+        <button type="submit" onclick="handleMemberSubmit()">登入</button>
+      </form>
+    </div>
+    <div class="horizontal-line"></div>
+    <div class="content">
+      <div class="title">計算正整數的平方</div>
+      <form id="squareForm">
+        <label for="positive-integer">正整數</label>
+        <input
+          class="positive-integer"
+          type="text"
+          id="positive-integer"
+          name="positive-integer"
+        /><br />
+        <button type="submit" onclick="handleSquareSubmit(event)">計算</button>
+      </form>
+    </div>
+    <script src="/static/script.js"></script>
+  </body>
+</html>
