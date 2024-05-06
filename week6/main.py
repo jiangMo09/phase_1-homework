@@ -5,19 +5,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 import mysql.connector
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
-
-def get_db_connection():
-    connection = mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME")
-    )
-    return connection
+from utils.mysql import connection_mysql, close_mysql
+from helpers.member import get_messages
 
 secret_key = secrets.token_bytes(32)
 
@@ -26,17 +16,6 @@ app.add_middleware(SessionMiddleware, secret_key=secret_key)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-
-def connection_mysql():
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    print("建立連線")
-    return connection, cursor
-
-def close_mysql(cursor, connection):
-    cursor.close()
-    connection.close()
-    print("關閉連線")
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
@@ -75,6 +54,7 @@ def signin(request: Request, username: str = Form(None), password: str = Form(No
 
     request.session["SIGNED_IN"] = True
     request.session["NAME"] = name 
+    request.session["USERNAME"] = username 
     return RedirectResponse("/member", status_code=302)
 
 
@@ -119,14 +99,40 @@ def member(request: Request):
         return RedirectResponse("/", status_code=302)
 
     name = request.session.get("NAME", "")
+    messages = get_messages()
+
     response = templates.TemplateResponse(
         "/member/index.html",
-        {"request": request, "header_text": "歡迎光臨，這是會員頁", "name": name},
+        {"request": request, "header_text": "歡迎光臨，這是會員頁", "name": name, "messages": messages},
     )
     response.headers["Cache-Control"] = "no-cache, no-store"
 
     return response
 
+@app.post("/createMessage")
+def createMessage(request: Request, message: str = Form(...)):
+    connection, cursor = connection_mysql()
+    username = request.session.get("USERNAME", "")
+
+    try:
+        find_id_query = "SELECT id FROM member WHERE username = %s"
+        find_id_value = (username,)
+        cursor.execute(find_id_query, find_id_value)
+        user = cursor.fetchone()
+
+        query = "INSERT INTO message (member_id, content) VALUES (%s, %s)"
+        values = (user[0], message)
+        cursor.execute(query, values)
+        connection.commit()
+    except mysql.connector.Error as err:
+        error_message = f"資料庫連線錯誤: {err}"
+    finally:
+        close_mysql(cursor, connection)
+
+    if error_message:
+        return RedirectResponse(f"/error?message={error_message}", status_code=302)
+    else:
+        return RedirectResponse("/member", status_code=302)
 
 @app.get("/error", response_class=HTMLResponse)
 def error(request: Request, message: str = Query(None)):

@@ -11,5 +11,22 @@
     <div class="content">
       {{ name }}，歡迎登入系統<br /><br /><a href="/signout">登出系統</a>
     </div>
+    <hr />
+    <div class="content">
+      <h2>快來留言吧</h2>
+      <form action="/createMessage" method="post">
+        <label for="message">內容</label>
+        <input id="message" type="text" name="message" required /><br /><br />
+        <input id="submit" type="submit" name="submit" value="送出" />
+      </form>
+    </div>
+    <hr />
+    <div class="content">
+      {% for message in messages %}
+      <span class="name">{{ message[0] }}：</span>
+      <span class="message">{{ message[1] }}</span>
+      <br />
+      {% endfor %}
+    </div>
   </body>
 </html>
