@@ -2,6 +2,7 @@ import mysql.connector
 
 from utils.mysql import connection_mysql, close_mysql
 
+
 def get_messages():
     connection, cursor = connection_mysql()
 
@@ -16,6 +17,7 @@ def get_messages():
         close_mysql(cursor, connection)
 
     return []
+
 
 def add_messages(username, message):
     connection, cursor = connection_mysql()

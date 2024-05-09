@@ -53,8 +53,8 @@ def signin(request: Request, username: str = Form(None), password: str = Form(No
         return RedirectResponse(f"/error?message={error_message}", status_code=302)
 
     request.session["SIGNED_IN"] = True
-    request.session["NAME"] = name 
-    request.session["USERNAME"] = username 
+    request.session["NAME"] = name
+    request.session["USERNAME"] = username
     return RedirectResponse("/member", status_code=302)
 
 
@@ -63,8 +63,13 @@ def signout(request: Request):
     request.session.clear()
     return RedirectResponse("/", status_code=302)
 
+
 @app.post("/signup")
-def signup(signupName: str = Form(...), signupAccount: str = Form(...), signupPassword: str = Form(...)):
+def signup(
+    signupName: str = Form(...),
+    signupAccount: str = Form(...),
+    signupPassword: str = Form(...),
+):
     error_message = None
     connection, cursor = connection_mysql()
 
@@ -103,19 +108,26 @@ def member(request: Request):
 
     response = templates.TemplateResponse(
         "/member/index.html",
-        {"request": request, "header_text": "歡迎光臨，這是會員頁", "name": name, "messages": messages},
+        {
+            "request": request,
+            "header_text": "歡迎光臨，這是會員頁",
+            "name": name,
+            "messages": messages,
+        },
     )
     response.headers["Cache-Control"] = "no-cache, no-store"
 
     return response
+
 
 @app.post("/createMessage")
 def createMessage(request: Request, message: str = Form(...)):
     username = request.session.get("USERNAME", "")
 
     add_messages(username, message)
-   
+
     return RedirectResponse("/member", status_code=302)
+
 
 @app.get("/error", response_class=HTMLResponse)
 def error(request: Request, message: str = Query(None)):
