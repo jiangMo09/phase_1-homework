@@ -1,15 +1,18 @@
 import secrets
+
 from fastapi import FastAPI, Request, Form, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 import mysql.connector
+from passlib.context import CryptContext
 
 from utils.mysql import get_db_connection, execute_query
 from utils.messages import get_messages, add_messages
 
 secret_key = secrets.token_bytes(32)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=secret_key)
@@ -36,11 +39,10 @@ def signin(request: Request, username: str = Form(None), password: str = Form(No
 
         try:
             connection = get_db_connection()
-            query = "SELECT * FROM member WHERE username = %s AND password = %s"
-            values = (username, password)
-            user = execute_query(connection, query, values)
+            query = "SELECT * FROM member WHERE username = %s"
+            user = execute_query(connection, query, (username,))
 
-            if user:
+            if user and pwd_context.verify(password, user[3]):
                 user_id = user[0]
                 name = user[1]
             else:
@@ -82,8 +84,9 @@ def signup(
         if existing_user:
             error_message = "重複的使用者名稱"
         else:
+            hashed_password = pwd_context.hash(signup_password)
             query = "INSERT INTO member (name, username, password) VALUES (%s, %s, %s)"
-            values = (signup_name, signup_account, signup_password)
+            values = (signup_name, signup_account, hashed_password)
             existing_user = execute_query(
                 connection, query, values, fetch_method="fetchone"
             )
