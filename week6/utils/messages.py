@@ -12,7 +12,7 @@ def get_messages():
 
     try:
         connection = get_db_connection()
-        query = "SELECT member.username, message.content,  message.time FROM message INNER JOIN member ON message.member_id = member.id ORDER BY message.time DESC"
+        query = "SELECT member.name, message.content, message.id, member.username,  message.time FROM message INNER JOIN member ON message.member_id = member.id ORDER BY message.time DESC"
         messages = execute_query(
             connection, query, values=None, fetch_method="fetchall"
         )

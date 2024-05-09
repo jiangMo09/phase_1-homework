@@ -25,8 +25,12 @@
       {% for message in messages %}
       <span class="name">{{ message[0] }}：</span>
       <span class="message">{{ message[1] }}</span>
+      {% if message[3] == user_name %}
+      <button type="submit" onclick="deleteMessage('{{ message[2] }}')">X</button>
+      {% endif %}
       <br />
       {% endfor %}
     </div>
   </body>
+  <script src="/static/script.js"></script>
 </html>

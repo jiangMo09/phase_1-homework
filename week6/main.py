@@ -61,6 +61,7 @@ def signin(request: Request, username: str = Form(None), password: str = Form(No
     request.session["SIGNED_IN"] = True
     request.session["NAME"] = name
     request.session["USER_ID"] = user_id
+    request.session["USER_NAME"] = username
     return RedirectResponse("/member", status_code=302)
 
 
@@ -111,6 +112,7 @@ def member(request: Request):
         return RedirectResponse("/", status_code=302)
 
     name = request.session.get("NAME", "")
+    user_name = request.session.get("USER_NAME", "")
     messages = get_messages()
 
     response = templates.TemplateResponse(
@@ -120,6 +122,7 @@ def member(request: Request):
             "header_text": "歡迎光臨，這是會員頁",
             "name": name,
             "messages": messages,
+            "user_name": user_name,
         },
     )
     response.headers["Cache-Control"] = "no-cache, no-store"
@@ -134,6 +137,13 @@ def createMessage(request: Request, message: str = Form(...)):
     add_messages(user_id, message)
 
     return RedirectResponse("/member", status_code=302)
+
+
+@app.post("/deleteMessage")
+def deleteMessage(message_id: int = Form(...)):
+    connection = get_db_connection()
+    query = "DELETE FROM message WHERE id = %s"
+    execute_query(connection, query, (message_id,))
 
 
 @app.get("/error", response_class=HTMLResponse)
