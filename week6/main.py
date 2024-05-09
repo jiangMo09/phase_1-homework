@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 import mysql.connector
 
-from utils.mysql import connection_mysql, close_mysql
+from utils.mysql import get_db_connection, execute_query
 from utils.messages import get_messages, add_messages
 
 secret_key = secrets.token_bytes(32)
@@ -28,33 +28,33 @@ def index(request: Request):
 def signin(request: Request, username: str = Form(None), password: str = Form(None)):
     error_message = None
     name = None
+    user_id = None
 
     if not username or not password:
         error_message = "Please enter username and password"
     else:
-        connection, cursor = connection_mysql()
 
         try:
+            connection = get_db_connection()
             query = "SELECT * FROM member WHERE username = %s AND password = %s"
             values = (username, password)
-            cursor.execute(query, values)
-            user = cursor.fetchone()
+            user = execute_query(connection, query, values)
 
             if user:
+                user_id = user[0]
                 name = user[1]
             else:
                 error_message = "帳號或是密碼輸入錯誤"
         except mysql.connector.Error as err:
-            error_message = f"資料庫連線錯誤: {err}"
-        finally:
-            close_mysql(cursor, connection)
+            print(f"資料庫連線錯誤:{err}")
+            error_message = "資料庫連線錯誤: 請聯繫工程師"
 
     if error_message:
         return RedirectResponse(f"/error?message={error_message}", status_code=302)
 
     request.session["SIGNED_IN"] = True
     request.session["NAME"] = name
-    request.session["USERNAME"] = username
+    request.session["USER_ID"] = user_id
     return RedirectResponse("/member", status_code=302)
 
 
@@ -66,31 +66,31 @@ def signout(request: Request):
 
 @app.post("/signup")
 def signup(
-    signupName: str = Form(...),
-    signupAccount: str = Form(...),
-    signupPassword: str = Form(...),
+    signup_name: str = Form(...),
+    signup_account: str = Form(...),
+    signup_password: str = Form(...),
 ):
     error_message = None
-    connection, cursor = connection_mysql()
 
     try:
+        connection = get_db_connection()
         query = "SELECT * FROM member WHERE username = %s"
-        cursor.execute(query, (signupAccount,))
-        existing_user = cursor.fetchone()
+        existing_user = execute_query(
+            connection, query, (signup_account,), fetch_method="fetchone"
+        )
 
         if existing_user:
             error_message = "重複的使用者名稱"
         else:
             query = "INSERT INTO member (name, username, password) VALUES (%s, %s, %s)"
-            values = (signupName, signupAccount, signupPassword)
-            cursor.execute(query, values)
-            connection.commit()
+            values = (signup_name, signup_account, signup_password)
+            existing_user = execute_query(
+                connection, query, values, fetch_method="fetchone"
+            )
 
     except mysql.connector.Error as err:
-        error_message = f"資料庫連線錯誤: {err}"
-
-    finally:
-        close_mysql(cursor, connection)
+        print(f"資料庫連線錯誤:{err}")
+        error_message = "資料庫連線錯誤: 請聯繫工程師"
 
     if error_message:
         return RedirectResponse(f"/error?message={error_message}", status_code=302)
@@ -122,9 +122,9 @@ def member(request: Request):
 
 @app.post("/createMessage")
 def createMessage(request: Request, message: str = Form(...)):
-    username = request.session.get("USERNAME", "")
+    user_id = request.session.get("USER_ID", "")
 
-    add_messages(username, message)
+    add_messages(user_id, message)
 
     return RedirectResponse("/member", status_code=302)
 
