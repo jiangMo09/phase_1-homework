@@ -1,6 +1,11 @@
+import logging
+
 import mysql.connector
 
 from utils.mysql import get_db_connection, execute_query
+
+logging.basicConfig(filename="app.log", level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def get_messages():
@@ -13,7 +18,7 @@ def get_messages():
         )
         return messages
     except mysql.connector.Error as err:
-        print(f"資料庫連線錯誤: {err}")
+        logger.error("資料庫連線錯誤: %s", err)
 
     return []
 
@@ -26,4 +31,4 @@ def add_messages(user_id, message):
         execute_query(connection, query, values)
 
     except mysql.connector.Error as err:
-        print(f"資料庫連線錯誤: {err}")
+        logger.error("資料庫連線錯誤: %s", err)

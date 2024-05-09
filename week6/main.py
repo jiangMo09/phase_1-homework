@@ -1,4 +1,5 @@
 import secrets
+import logging
 
 from fastapi import FastAPI, Request, Form, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -10,6 +11,9 @@ from passlib.context import CryptContext
 
 from utils.mysql import get_db_connection, execute_query
 from utils.messages import get_messages, add_messages
+
+logging.basicConfig(filename="app.log", level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 secret_key = secrets.token_bytes(32)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -48,7 +52,7 @@ def signin(request: Request, username: str = Form(None), password: str = Form(No
             else:
                 error_message = "帳號或是密碼輸入錯誤"
         except mysql.connector.Error as err:
-            print(f"資料庫連線錯誤:{err}")
+            logger.error("資料庫連線錯誤: %s", err)
             error_message = "資料庫連線錯誤: 請聯繫工程師"
 
     if error_message:
@@ -92,7 +96,7 @@ def signup(
             )
 
     except mysql.connector.Error as err:
-        print(f"資料庫連線錯誤:{err}")
+        logger.error("資料庫連線錯誤: %s", err)
         error_message = "資料庫連線錯誤: 請聯繫工程師"
 
     if error_message:
