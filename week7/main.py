@@ -131,7 +131,7 @@ def member(request: Request):
 def get_member(request: Request, username: str = Query(None)):
     if not request.session.get("SIGNED_IN", False):
         return {"data": None}
-    
+
     try:
         connection = get_db_connection()
         query = "SELECT * FROM member WHERE username = %s"
@@ -140,7 +140,13 @@ def get_member(request: Request, username: str = Query(None)):
         )
 
         if find_member:
-            return {"data": {"id": find_member[0], "name": find_member[1], "username": find_member[2]}}
+            return {
+                "data": {
+                    "id": find_member[0],
+                    "name": find_member[1],
+                    "username": find_member[2],
+                }
+            }
         else:
             return {"data": None}
 
