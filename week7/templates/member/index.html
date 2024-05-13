@@ -9,7 +9,10 @@
   <body>
     {% include "_header.html" with context %}
     <div class="content">
-      {{ name }}，歡迎登入系統<br /><br /><a href="/signout">登出系統</a>
+      <span class="welcome-name">{{ name }}</span>，歡迎登入系統<br /><br /><a
+        href="/signout"
+        >登出系統</a
+      >
     </div>
     <hr />
     <div class="content">
@@ -28,13 +31,20 @@
     <div class="content">
       <h2>更新我的姓名</h2>
       <input
-        id="update-name"
+        id="update-username"
         type="text"
-        name="update-name"
+        name="update-username"
         title="請輸入中文"
         required
       />
-      <button id="update" type="submit" name="update">更新</button>
+      <button
+        id="update"
+        type="submit"
+        name="update"
+        onclick="patchAPIMemberName()"
+      >
+        更新
+      </button>
       <div id="update-result"></div>
     </div>
   </body>

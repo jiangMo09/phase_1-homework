@@ -27,3 +27,28 @@ const getAPIMember = async () => {
 
   searchResult.innerHTML = `<p>${name} (${username})</p>`;
 };
+
+const patchAPIMemberName = async () => {
+  const updateUsername = document.getElementById("update-username");
+  const update = document.getElementById("update-result");
+  const newUsername = updateUsername.value;
+
+  const welcomeName = document.querySelector(".welcome-name");
+
+  const response = await fetch(`/api/member`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name: newUsername })
+  });
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    update.textContent = "更新失敗";
+  }
+
+  welcomeName.innerHTML = newUsername;
+  update.textContent = "更新成功";
+};
