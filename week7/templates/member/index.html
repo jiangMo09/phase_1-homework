@@ -13,23 +13,29 @@
     </div>
     <hr />
     <div class="content">
-      <h2>快來留言吧</h2>
-      <form action="/createMessage" method="post">
-        <label for="message">內容</label>
-        <input id="message" type="text" name="message" required /><br /><br />
-        <input id="submit" type="submit" name="submit" value="送出" />
-      </form>
+      <h2>查詢會員姓名</h2>
+      <input
+        id="search-username"
+        type="text"
+        name="search-username"
+        title="帳號需由 8~10 位英數字組成，包含至少一個大寫字母，且不可輸入特殊符號"
+        required
+      />
+      <button id="search" type="button" onclick="getAPIMember()">查詢</button>
+      <div id="search-result"></div>
     </div>
     <hr />
     <div class="content">
-      {% for message in messages %}
-      <span class="name">{{ message[0] }}：</span>
-      <span class="message">{{ message[1] }}</span>
-      {% if message[3] == user_name %}
-      <button type="submit" onclick="deleteMessage('{{ message[2] }}')">X</button>
-      {% endif %}
-      <br />
-      {% endfor %}
+      <h2>更新我的姓名</h2>
+      <input
+        id="update-name"
+        type="text"
+        name="update-name"
+        title="請輸入中文"
+        required
+      />
+      <button id="update" type="submit" name="update">更新</button>
+      <div id="update-result"></div>
     </div>
   </body>
   <script src="/static/script.js"></script>

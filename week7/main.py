@@ -10,7 +10,6 @@ import mysql.connector
 from passlib.context import CryptContext
 
 from utils.mysql import get_db_connection, execute_query
-from utils.messages import get_messages, add_messages
 
 logging.basicConfig(filename="app.log", level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -113,7 +112,6 @@ def member(request: Request):
 
     name = request.session.get("NAME", "")
     user_name = request.session.get("USER_NAME", "")
-    messages = get_messages()
 
     response = templates.TemplateResponse(
         "/member/index.html",
@@ -121,7 +119,6 @@ def member(request: Request):
             "request": request,
             "header_text": "歡迎光臨，這是會員頁",
             "name": name,
-            "messages": messages,
             "user_name": user_name,
         },
     )
@@ -130,20 +127,26 @@ def member(request: Request):
     return response
 
 
-@app.post("/createMessage")
-def createMessage(request: Request, message: str = Form(...)):
-    user_id = request.session.get("USER_ID", "")
+@app.get("/api/member")
+def get_member(request: Request, username: str = Query(None)):
+    if not request.session.get("SIGNED_IN", False):
+        return {"data": None}
+    
+    try:
+        connection = get_db_connection()
+        query = "SELECT * FROM member WHERE username = %s"
+        find_member = execute_query(
+            connection, query, (username,), fetch_method="fetchone"
+        )
 
-    add_messages(user_id, message)
+        if find_member:
+            return {"data": {"id": find_member[0], "name": find_member[1], "username": find_member[2]}}
+        else:
+            return {"data": None}
 
-    return RedirectResponse("/member", status_code=302)
-
-
-@app.post("/deleteMessage")
-def deleteMessage(message_id: int = Form(...)):
-    connection = get_db_connection()
-    query = "DELETE FROM message WHERE id = %s"
-    execute_query(connection, query, (message_id,))
+    except mysql.connector.Error as err:
+        logger.error("資料庫連線錯誤: %s", err)
+        return {"data": None}
 
 
 @app.get("/error", response_class=HTMLResponse)

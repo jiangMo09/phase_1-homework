@@ -9,33 +9,21 @@ const handleMemberSubmit = () => {
   });
 };
 
-const handleSquareSubmit = (event) => {
-  event.preventDefault();
-  const positiveInteger = document.getElementById("positive-integer").value;
+const getAPIMember = async () => {
+  const usernameInput = document.getElementById("search-username");
+  const searchResult = document.getElementById("search-result");
 
-  if (isNaN(parseFloat(positiveInteger)) || parseFloat(positiveInteger) <= 0) {
-    return alert("Please enter a positive number");
-  }
-
-  const actionUrl = "/square/" + positiveInteger;
-  window.location.href = actionUrl;
-};
-
-const deleteMessage = async (message_id) => {
-  const yes = confirm("你確定要刪除該留言嗎？");
-  if (!yes) {
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("message_id", message_id);
-
-  const response = await fetch("/deleteMessage", {
-    method: "POST",
-    body: formData
+  const usernameValue = usernameInput.value;
+  const response = await fetch(`/api/member?username=${usernameValue}`, {
+    method: "GET"
   });
 
-  if (response.status == 200) {
-    window.location.reload();
+  const { data } = (await response.json()) || {};
+  const { name, username } = data || {};
+
+  if (!username) {
+    searchResult.innerHTML = "<p>查無此會員</p>";
   }
+
+  searchResult.innerHTML = `<p>${name} (${username})</p>`;
 };
