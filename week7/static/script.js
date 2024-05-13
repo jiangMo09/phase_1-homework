@@ -46,7 +46,7 @@ const patchAPIMemberName = async () => {
 
   const data = await response.json();
 
-  if (!data.ok) {
+  if (data.error) {
     update.textContent = "更新失敗";
     return;
   }
