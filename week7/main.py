@@ -168,6 +168,7 @@ def update_member_name(request: Request, member_data: dict = Body(...)):
             connection = get_db_connection()
             query = "UPDATE member SET name = %s WHERE id = %s"
             execute_query(connection, query, (new_name, user_id))
+            request.session["NAME"] = new_name
 
             return {"ok": True}
         else:
