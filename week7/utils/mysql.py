@@ -12,7 +12,7 @@ dbconfig = {
 }
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
-    pool_name="mypool", pool_size=10, **dbconfig
+    pool_name="mypool", pool_size=20, **dbconfig
 )
 
 
@@ -22,16 +22,19 @@ def get_db_connection():
 
 
 def execute_query(connection, query, values=None, fetch_method="fetchone"):
-    with connection.cursor() as cursor:
-        if values:
-            cursor.execute(query, values)
-        else:
-            cursor.execute(query)
+    try:
+        with connection.cursor() as cursor:
+            if values:
+                cursor.execute(query, values)
+            else:
+                cursor.execute(query)
 
-        fetch_function = getattr(cursor, fetch_method)
-        result = fetch_function()
+            fetch_function = getattr(cursor, fetch_method)
+            result = fetch_function()
 
-        if not query.lstrip().upper().startswith("SELECT"):
-            connection.commit()
+            if not query.lstrip().upper().startswith("SELECT"):
+                connection.commit()
 
-    return result
+        return result
+    finally:
+        connection.close()

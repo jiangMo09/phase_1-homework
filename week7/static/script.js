@@ -19,12 +19,13 @@ const getAPIMember = async () => {
   });
 
   const { data } = (await response.json()) || {};
-  const { name, username } = data || {};
 
-  if (!username) {
+  if (!data) {
     searchResult.innerHTML = "<p>查無此會員</p>";
+    return;
   }
 
+  const { name, username } = data;
   searchResult.innerHTML = `<p>${name} (${username})</p>`;
 };
 
@@ -47,6 +48,7 @@ const patchAPIMemberName = async () => {
 
   if (!data.ok) {
     update.textContent = "更新失敗";
+    return;
   }
 
   welcomeName.innerHTML = newUsername;
