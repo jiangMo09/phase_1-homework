@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+    <title>首頁</title>
+  </head>
+  <body>
+    {% include "_header.html" with context %}
+    <div class="content">
+      <div class="title">註冊帳號</div>
+      <form id="signup" action="/signup" method="post">
+        <label for="signup_name">姓名</label>
+        <input
+          id="signup_name"
+          type="text"
+          name="signup_name"
+          class="username"
+          required
+        /><br />
+        <label for="signup_account">帳號</label>
+        <input
+          id="signup_account"
+          type="text"
+          name="signup_account"
+          class="username"
+          required
+        /><br />
+        <label for="signup_password">密碼</label>
+        <input
+          id="signup_password"
+          type="password"
+          name="signup_password"
+          class="password"
+          required
+        /><br />
+        <button type="submit" class="terms">註冊</button>
+      </form>
+    </div>
+    <hr />
+    <div class="content">
+      <div class="title">登入系統</div>
+      <form id="loginForm" action="/signin" method="post">
+        <label for="username">帳號</label>
+        <input
+          class="username"
+          type="text"
+          id="username"
+          name="username"
+          required
+        /><br />
+        <label for="password">密碼</label>
+        <input
+          class="password"
+          type="password"
+          id="password"
+          name="password"
+          required
+        /><br />
+        <label for="terms">
+          同意條款
+          <input class="terms" type="checkbox" id="terms" name="terms" /></label
+        ><br />
+        <button type="submit" onclick="handleMemberSubmit()">登入</button>
+      </form>
+    </div>
+    <script src="/static/script.js"></script>
+  </body>
+</html>
