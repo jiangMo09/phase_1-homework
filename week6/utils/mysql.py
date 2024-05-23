@@ -12,7 +12,7 @@ dbconfig = {
 }
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
-    pool_name="mypool", pool_size=10, **dbconfig
+    pool_name="mypool", pool_size=32, **dbconfig
 )
 
 
@@ -33,5 +33,5 @@ def execute_query(connection, query, values=None, fetch_method="fetchone"):
 
         if not query.lstrip().upper().startswith("SELECT"):
             connection.commit()
-
+    connection.close()
     return result
