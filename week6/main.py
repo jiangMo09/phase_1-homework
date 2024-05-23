@@ -1,7 +1,7 @@
 import secrets
 import logging
 
-from fastapi import FastAPI, Request, Form, Query
+from fastapi import Body, FastAPI, Request, Form, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -89,6 +89,7 @@ def signup(
         if existing_user:
             error_message = "重複的使用者名稱"
         else:
+            connection = get_db_connection()
             hashed_password = pwd_context.hash(signup_password)
             query = "INSERT INTO member (name, username, password) VALUES (%s, %s, %s)"
             values = (signup_name, signup_account, hashed_password)
@@ -144,6 +145,58 @@ def deleteMessage(message_id: int = Form(...)):
     connection = get_db_connection()
     query = "DELETE FROM message WHERE id = %s"
     execute_query(connection, query, (message_id,))
+
+
+@app.get("/api/member")
+def get_member(request: Request, username: str = Query(None)):
+    if not request.session.get("SIGNED_IN", False):
+        return {"data": None}
+
+    try:
+        connection = get_db_connection()
+        query = "SELECT * FROM member WHERE username = %s"
+        find_member = execute_query(
+            connection, query, (username,), fetch_method="fetchone"
+        )
+
+        if find_member:
+            return {
+                "data": {
+                    "id": find_member[0],
+                    "name": find_member[1],
+                    "username": find_member[2],
+                }
+            }
+        else:
+            return {"data": None}
+
+    except mysql.connector.Error as err:
+        logger.error("資料庫連線錯誤: %s", err)
+        return {"data": None}
+
+
+@app.patch("/api/member")
+def update_member_name(request: Request, member_data: dict = Body(...)):
+    if not request.session.get("SIGNED_IN", False):
+        return {"error": True}
+
+    try:
+        user_id = request.session.get("USER_ID")
+        new_name = member_data.get("name")
+
+        if new_name:
+            connection = get_db_connection()
+            query = "UPDATE member SET name = %s WHERE id = %s"
+            execute_query(connection, query, (new_name, user_id))
+            request.session["NAME"] = new_name
+
+            return {"ok": True}
+        else:
+            return {"error": True}
+
+    except mysql.connector.Error as err:
+        logger.error("資料庫連線錯誤: %s", err)
+        return {"error": True}
 
 
 @app.get("/error", response_class=HTMLResponse)
